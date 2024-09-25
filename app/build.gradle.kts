@@ -22,6 +22,14 @@ android {
 
     buildTypes {
         release {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        debug {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -68,4 +76,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     //Animated navigation bar
     implementation(libs.animated.navigation.bar)
+    //Google fonts
+    implementation(libs.androidx.ui.text.google.fonts)
+    //Jetpack compose navigation
+    implementation(libs.androidx.navigation.compose)
+    //Jetpack compose
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 }
