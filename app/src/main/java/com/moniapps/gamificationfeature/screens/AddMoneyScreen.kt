@@ -31,17 +31,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.moniapps.gamificationfeature.notification.PaymentNotificationService
 import com.moniapps.gamificationfeature.viewmodel.WalletViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMoneyScreen(navHostController: NavHostController, walletViewModel: WalletViewModel) {
     val walletBalance by walletViewModel.balance.collectAsState()
-
+    val context = LocalContext.current
+    val notificationService = PaymentNotificationService(context)
     var amount by remember { mutableStateOf("") }
     val focusRequester = remember {
         FocusRequester()
@@ -94,8 +97,9 @@ fun AddMoneyScreen(navHostController: NavHostController, walletViewModel: Wallet
                             if (amount.isNotEmpty() && amount.toInt() >= 100){
                                 walletViewModel.addAmount(amount.toDouble())
                                 walletViewModel.addCoins(amount.toInt())
-                                navHostController.navigateUp()
                                 walletViewModel.redeemCoinsCondition()
+                                notificationService.showNotification(title = "Payment Successful", message = "₹${amount.toInt()} added to your wallet.")
+                                navHostController.navigateUp()
                             }
 
                         }

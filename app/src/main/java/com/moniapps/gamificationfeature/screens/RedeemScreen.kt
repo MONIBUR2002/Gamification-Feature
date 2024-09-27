@@ -1,5 +1,8 @@
 package com.moniapps.gamificationfeature.screens
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.moniapps.gamificationfeature.notification.PaymentNotificationService
 import com.moniapps.gamificationfeature.ui.theme.goldColor
 import com.moniapps.gamificationfeature.viewmodel.WalletViewModel
 
@@ -51,6 +56,20 @@ fun RedeemScreen(
     val redeemableCoin by walletViewModel.redeemableCoin.collectAsState()
     var upiId by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
+    var hasNotificationPermission by remember {
+        mutableStateOf(false)
+    }
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        hasNotificationPermission = isGranted
+    }
+    if (!hasNotificationPermission) {
+        SideEffect {
+            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+    val notificationService = PaymentNotificationService(LocalContext.current)
     Scaffold(
         topBar = {
             TopAppBar(title = {
@@ -140,6 +159,7 @@ fun RedeemScreen(
                         walletViewModel.redeemCoin()
                         focusManager.clearFocus(false)
                         walletViewModel.isRedeemToggle(toggle = true)
+                        notificationService.showNotification(title = "Redeem successful", message = "You have successfully redeemed $redeemableCoin coins.")
                         navHostController.navigateUp()
                     },
                     modifier = Modifier

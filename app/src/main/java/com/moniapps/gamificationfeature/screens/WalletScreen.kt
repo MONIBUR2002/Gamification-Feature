@@ -1,5 +1,10 @@
 package com.moniapps.gamificationfeature.screens
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -21,7 +26,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddCircle
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +54,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -62,6 +68,7 @@ import com.moniapps.gamificationfeature.ui.theme.addMoneyButtonColor
 import com.moniapps.gamificationfeature.viewmodel.WalletViewModel
 import kotlinx.coroutines.delay
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WalletScreen(
@@ -85,6 +92,19 @@ fun WalletScreen(
         delay(2200)
         walletViewModel.isRedeemToggle(toggle = false)
     }
+    var hasNotificationPermission by remember {
+        mutableStateOf(false)
+    }
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        hasNotificationPermission = isGranted
+    }
+    if (!hasNotificationPermission) {
+        SideEffect {
+            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     val progress = animateFloatAsState(
         targetValue = transaction / 5f,
@@ -97,7 +117,9 @@ fun WalletScreen(
                 title = {
                     Text(
                         text = "Wallet",
-                        style = MaterialTheme.typography.headlineLarge
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        )
                     )
                 },
                 windowInsets = WindowInsets(0, 0, 0, 0),
@@ -190,7 +212,7 @@ fun WalletScreen(
             }
 
             if (coinAlertDialog) {
-                AlertDialog(onDismissRequest = { coinAlertDialog = false }) {
+                BasicAlertDialog(onDismissRequest = { coinAlertDialog = false }) {
                     Card(
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(
@@ -219,7 +241,6 @@ fun WalletScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 LinearProgressIndicator(
                     progress = {
                         progress.value
@@ -228,8 +249,6 @@ fun WalletScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                 )
-
-
                 Card(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
                 ) {
@@ -250,7 +269,9 @@ fun WalletScreen(
                             fontSize = 40.sp
                         )
                         Button(
-                            onClick = { navHostController.navigate(route = ScreenGraph.AddMoneyScreen.route) },
+                            onClick = {
+                                navHostController.navigate(route = ScreenGraph.AddMoneyScreen.route)
+                            },
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
                             shape = RoundedCornerShape(10.dp),
                             colors = ButtonDefaults.buttonColors(
@@ -310,17 +331,13 @@ fun WalletScreen(
                     enabled = redeemable && coins >= 500
                 ) {
                     if (redeemable) Text(text = "Redeem coins")
-                    else if ( coins < 500) Text(text = "Collect 500 coins to redeem")
+                    else if (coins < 500) Text(text = "Collect ${500 - coins} more coins to redeem")
                     else Text(
                         text = "${(5 - transaction).toInt()} transactions left to redeem",
                         style = MaterialTheme.typography.bodyMedium
                     )
-
-
                 }
-
             }
-
         }
     }
 }
