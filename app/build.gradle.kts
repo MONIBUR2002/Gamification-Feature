@@ -82,4 +82,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     //Jetpack compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    //Lottie animation
+    implementation(libs.dotlottie.android)
+    implementation(libs.lottie.compose)
 }

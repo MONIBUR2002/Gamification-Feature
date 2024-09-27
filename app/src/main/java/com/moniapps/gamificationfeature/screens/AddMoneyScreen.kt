@@ -1,6 +1,5 @@
 package com.moniapps.gamificationfeature.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,17 +31,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.moniapps.gamificationfeature.viewmodel.WalletViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddMoneyScreen(modifier: Modifier = Modifier, navHostController: NavHostController, walletViewModel: WalletViewModel) {
+fun AddMoneyScreen(navHostController: NavHostController, walletViewModel: WalletViewModel) {
     val walletBalance by walletViewModel.balance.collectAsState()
 
     var amount by remember { mutableStateOf("") }
@@ -52,7 +49,6 @@ fun AddMoneyScreen(modifier: Modifier = Modifier, navHostController: NavHostCont
     LaunchedEffect(key1 = Unit) {
         focusRequester.requestFocus()
     }
-    val context = LocalContext.current
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -62,7 +58,7 @@ fun AddMoneyScreen(modifier: Modifier = Modifier, navHostController: NavHostCont
                 navigationIcon = {
                     IconButton(onClick = { navHostController.navigateUp() }) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "ArrowBack"
                         )
                     }
@@ -95,11 +91,11 @@ fun AddMoneyScreen(modifier: Modifier = Modifier, navHostController: NavHostCont
                     keyboardActions = KeyboardActions(
 
                         onDone = {
-                            if (amount.isNotEmpty() && amount.toInt() > 100){
+                            if (amount.isNotEmpty() && amount.toInt() >= 100){
                                 walletViewModel.addAmount(amount.toDouble())
                                 walletViewModel.addCoins(amount.toInt())
                                 navHostController.navigateUp()
-                                walletViewModel.redeemCoins()
+                                walletViewModel.redeemCoinsCondition()
                             }
 
                         }
@@ -122,10 +118,4 @@ fun AddMoneyScreen(modifier: Modifier = Modifier, navHostController: NavHostCont
         }
 
     }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-private fun AddMoneyScreenPreview() {
-
 }
