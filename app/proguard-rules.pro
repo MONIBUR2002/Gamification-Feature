@@ -19,3 +19,20 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+#-keep class com.moniapps.gamificationfeature.animatednavigationbar.** { *; }
+#-keep class androidx.ui.text.font.** { *; }
+#-keep class androidx.navigation.compose.** { *; }
+#-keep class androidx.lifecycle.viewmodel.compose.** { *; }
+#-keep class com.airbnb.lottie.** { *; }
+#-keep class com.dotlottie.android.** { *; }
+#-dontwarn com.airbnb.lottie.**
+#-dontwarn com.dotlottie.android.**
+
+-dontwarn java.awt.Component
+-dontwarn java.awt.GraphicsEnvironment
+-dontwarn java.awt.HeadlessException
+-dontwarn java.awt.Window
+
+
+

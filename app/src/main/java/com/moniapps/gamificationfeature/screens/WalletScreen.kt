@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -137,7 +138,7 @@ fun WalletScreen(
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             if (isRedeem) {
-                AlertDialog(onDismissRequest = { walletViewModel.isRedeemToggle(toggle = false) }) {
+                BasicAlertDialog(onDismissRequest = { walletViewModel.isRedeemToggle(toggle = false) }) {
                     Card(
                         border = BorderStroke(
                             width = 8.dp, brush = Brush.sweepGradient(
@@ -208,7 +209,8 @@ fun WalletScreen(
                                 text = if (transaction < 5)
                                     "You can redeem your coins after ${(5 - transaction).toInt()} more transactions"
                                 else "You can redeem your coins now",
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                     }
@@ -219,10 +221,12 @@ fun WalletScreen(
             ) {
 
                 LinearProgressIndicator(
+                    progress = {
+                        progress.value
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    progress = progress.value
                 )
 
 

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -130,7 +131,7 @@ fun MainScreen(
 
             if (coinAdded.value) {
 
-                AlertDialog(onDismissRequest = { walletViewModel.dismissAlertDialog() }) {
+                BasicAlertDialog(onDismissRequest = { walletViewModel.dismissAlertDialog() }) {
                     Card(
                         border = BorderStroke(
                             width = 8.dp, brush = Brush.sweepGradient(
@@ -172,7 +173,7 @@ fun MainScreen(
                                 )
                             }
 
-                            Text(text = "You got new coins")
+                            Text(text = "You got new coins", color = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                 }
